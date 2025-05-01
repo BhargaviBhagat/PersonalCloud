@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Cloud Storage</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex flex-col">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <span class="text-xl font-semibold text-gray-900">Personal Cloud</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="{{ url_for('login') }}" class="text-gray-600 hover:text-gray-900">Login</a>
+                        <a href="{{ url_for('register') }}" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Register</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <main class="flex-grow flex items-center justify-center">
+            <div class="text-center max-w-2xl">
+                <h1 class="text-4xl font-bold text-gray-900 mb-6">Secure Personal Cloud Storage</h1>
+                <p class="text-xl text-gray-600 mb-8">
+                    Store, manage, and share your files securely with end-to-end encryption.
+                    Your data remains private and protected at all times.
+                </p>
+                <div class="space-x-4">
+                    <a href="{{ url_for('register') }}" class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition text-lg">
+                        Get Started
+                    </a>
+                    <a href="#features" class="text-blue-600 px-6 py-3 rounded-md hover:bg-blue-50 transition text-lg">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <!-- Features Section -->
+        <section id="features" class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Features</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition">
+                        <h3 class="text-xl font-semibold mb-3">Secure Encryption</h3>
+                        <p class="text-gray-600">Files encrypted with AES-256 before storage</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition">
+                        <h3 class="text-xl font-semibold mb-3">Private Buckets</h3>
+                        <p class="text-gray-600">Organize files into personal storage buckets</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition">
+                        <h3 class="text-xl font-semibold mb-3">Secure Sharing</h3>
+                        <p class="text-gray-600">Share files with expiring, encrypted links</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

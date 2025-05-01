@@ -1,0 +1,82 @@
+services:
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: PersonalCloud
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d PersonalCloud"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:6-alpine
+    command: redis-server --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "ping | grep -q PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      target: production
+      args:
+        - UID=1000
+        - GID=1000
+    command: >
+      sh -c 'while ! nc -z db 5432; do sleep 2; done;
+      while ! nc -z redis 6379; do sleep 2; done;
+      gunicorn --bind 0.0.0.0:5000 --workers 4 --threads 2
+      --timeout 120 --access-logfile - --error-logfile - "app:app"'
+    environment:
+      - FLASK_ENV=production
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=PersonalCloud
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+      - REDIS_URL=redis://redis:6379/0
+      - UPLOAD_FOLDER=/app/uploads
+      - FLASK_SESSION_DIR=/app/flask_session
+    volumes:
+      - ./uploads:/app/uploads:rw
+      - ./flask_session:/app/flask_session
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  pg-data:
+    driver: local
+  redis-data:
+    driver: local

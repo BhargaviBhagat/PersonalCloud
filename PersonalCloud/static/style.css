@@ -1,0 +1,165 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+.flash-message {
+    animation: fadeInOut 3s ease-in-out;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-10px); }
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.sidebar-collapse {
+    transition: all 0.3s ease;
+}
+
+.dropzone-hover {
+    border-color: #3b82f6 !important;
+    background-color: #eff6ff !important;
+}
+
+.card {
+    max-width: 500px;
+    margin: 2rem auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: white;
+    padding: 2rem;
+}
+
+.table {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.display-1 {
+    font-size: 5rem;
+    color: #dc3545;
+    text-align: center;
+}
+
+#mfa-setup-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.mfa-qr-code {
+    display: block;
+    margin: 1rem auto;
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem;
+    background: white;
+}
+
+.verification-input {
+    letter-spacing: 0.5rem;
+    font-size: 1.5rem;
+    text-align: center;
+    width: 100%;
+}
+
+.mfa-steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+.step {
+    text-align: center;
+    flex: 1;
+    position: relative;
+}
+.step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #495057;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+.step.active .step-number {
+    background: #0d6efd;
+    color: white;
+}
+.step-text {
+    display: block;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+.step.active .step-text {
+    color: #0d6efd;
+    font-weight: 500;
+}
+.qr-code-container {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+#qr-code-image {
+    border: 1px solid #dee2e6;
+    padding: 0.5rem;
+    background: white;
+}
+#totp_code {
+    font-size: 1.25rem;
+    letter-spacing: 0.5rem;
+}

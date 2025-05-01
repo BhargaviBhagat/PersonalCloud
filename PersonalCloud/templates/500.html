@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50">
+    <div class="text-center">
+        <h1 class="text-6xl font-bold text-gray-800 mb-4">500</h1>
+        <p class="text-xl text-gray-600 mb-6">Something went wrong on our end. We're working to fix it!</p>
+        <div class="space-x-4">
+            <a href="{{ url_for('dashboard') }}" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition">
+                <i class="fas fa-home mr-2"></i> Dashboard
+            </a>
+            <a href="mailto:support@securecloud.com" class="inline-block border border-blue-600 text-blue-600 px-6 py-3 rounded-md hover:bg-blue-50 transition">
+                <i class="fas fa-envelope mr-2"></i> Contact Support
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

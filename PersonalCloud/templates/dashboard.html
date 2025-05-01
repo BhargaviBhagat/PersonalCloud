@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SecureCloud</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .file-item:hover {
+            background-color: #f8fafc;
+            transform: translateX(5px);
+        }
+        .dropzone-active {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 bg-white shadow-md transform transition-all">
+            <div class="p-4 border-b">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-cloud text-blue-500 text-2xl"></i>
+                    <h2 class="text-xl font-semibold text-gray-800">SecureCloud</h2>
+                </div>
+            </div>
+            
+            <div class="p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-medium text-gray-700">Storage</h3>
+                    <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">75% used</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: 75%"></div>
+                </div>
+                
+                <h3 class="font-medium text-gray-700 mb-3">Your Buckets</h3>
+                <ul class="space-y-2 mb-6">
+                    {% for bucket in buckets %}
+                    <li class="flex items-center p-2 rounded hover:bg-gray-100 transition cursor-pointer">
+                        <i class="fas fa-folder text-blue-400 mr-2"></i>
+                        <span>{{ bucket.name }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                
+                <form method="POST" action="{{ url_for('create_bucket') }}" class="mb-6">
+                    <div class="relative">
+                        <input type="text" name="bucket_name" placeholder="New bucket" required
+                               class="w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-plus absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button type="submit" class="w-full mt-2 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
+                        Create Bucket
+                    </button>
+                </form>
+                
+                <div class="p-2 bg-gray-50 rounded-md">
+                    <a href="#" class="flex items-center text-gray-700 hover:text-blue-600 transition">
+                        <i class="fas fa-cog mr-2"></i>
+                        <span>Settings</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Top Bar -->
+            <div class="bg-white shadow-sm p-4 flex justify-between items-center">
+                <h1 class="text-xl font-bold text-gray-800">Welcome, {{ user.username }}</h1>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <i class="fas fa-bell text-gray-500 hover:text-blue-600 cursor-pointer"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="text-gray-600 hover:text-blue-600 transition">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-6">
+                <!-- Upload Card -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Upload Files</h2>
+                    
+                    <form method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data" id="uploadForm" class="mb-4">
+                        <div class="flex flex-col space-y-4">
+                            {% if buckets %}
+                            <div class="flex items-center space-x-4">
+                                <label class="w-24 text-gray-700">Bucket:</label>
+                                <select name="bucket_id" required class="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500">
+                                    {% for bucket in buckets %}
+                                    <option value="{{ bucket.id }}">{{ bucket.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% else %}
+                            <p class="text-red-500">Please create a bucket first to upload files.</p>
+                            {% endif %}
+                            
+                            <div class="flex items-center space-x-4">
+                                <label class="w-24 text-gray-700">File:</label>
+                                <input type="file" name="file" required id="fileInput" class="flex-1">
+                            </div>
+                            
+                            <div class="flex items-center space-x-4">
+                                <label class="w-24 text-gray-700">Password:</label>
+                                <input type="password" name="password" placeholder="(Optional) Encryption password" 
+                                       class="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        
+                        <div id="dropzone" class="mt-4 p-8 border-2 border-dashed border-gray-300 rounded-md text-center text-gray-500 cursor-pointer">
+                            <i class="fas fa-cloud-upload-alt text-4xl mb-2 text-blue-400"></i>
+                            <p class="mb-1">Drag and drop files here</p>
+                            <p class="text-sm">or click to browse</p>
+                        </div>
+                        
+                        <button type="submit" class="mt-4 w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
+                            Upload File
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Files Section -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-4 border-b flex justify-between items-center">
+                        <h2 class="text-lg font-semibold text-gray-800">Your Files</h2>
+                        <div class="relative">
+                            <input type="text" placeholder="Search files..." 
+                                   class="pl-8 pr-4 py-1 border rounded-md focus:ring-2 focus:ring-blue-500">
+                            <i class="fas fa-search absolute left-3 top-2 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="divide-y divide-gray-200">
+                        {% if files %}
+                        {% for file in files %}
+                        <div class="file-item p-4 flex justify-between items-center transition">
+                            <div class="flex items-center space-x-4">
+                                {% if file.filename.endswith(('.png', '.jpg', '.jpeg', '.gif')) %}
+                                <i class="fas fa-image text-blue-400 text-xl"></i>
+                                {% elif file.filename.endswith(('.pdf')) %}
+                                <i class="fas fa-file-pdf text-red-400 text-xl"></i>
+                                {% elif file.filename.endswith(('.doc', '.docx')) %}
+                                <i class="fas fa-file-word text-blue-400 text-xl"></i>
+                                {% elif file.filename.endswith(('.xls', '.xlsx')) %}
+                                <i class="fas fa-file-excel text-green-400 text-xl"></i>
+                                {% else %}
+                                <i class="fas fa-file text-gray-400 text-xl"></i>
+                                {% endif %}
+                                <div>
+                                    <p class="font-medium">{{ file.filename }}</p>
+                                    <p class="text-sm text-gray-500">Bucket: {{ file.bucket.name }} • {{ file.upload_time.strftime('%b %d, %Y') }}</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-3">
+                                <a href="{{ url_for('download', file_id=file.id) }}" 
+                                   class="text-blue-500 hover:text-blue-700 transition" title="Download">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                <a href="{{ url_for('share', file_id=file.id) }}" 
+                                   class="text-purple-500 hover:text-purple-700 transition" title="Share">
+                                    <i class="fas fa-share-alt"></i>
+                                </a>
+                                <a href="#" class="text-red-500 hover:text-red-700 transition" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="p-8 text-center text-gray-500">
+                            <i class="fas fa-folder-open text-4xl mb-2 text-gray-300"></i>
+                            <p>No files yet. Upload your first file!</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+       
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        
+        dropzone.addEventListener('click', () => fileInput.click());
+        
+        ['dragover', 'dragenter'].forEach(event => {
+            dropzone.addEventListener(event, (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dropzone-active');
+            });
+        });
+        
+        ['dragleave', 'dragend', 'drop'].forEach(event => {
+            dropzone.addEventListener(event, (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dropzone-active');
+            });
+        });
+        
+        dropzone.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            if (files.length) {
+                fileInput.files = files;
+                // Update UI to show selected file
+                const fileName = document.createElement('div');
+                fileName.textContent = `Selected: ${files[0].name}`;
+                fileName.className = 'text-sm text-blue-600 mt-2';
+                dropzone.appendChild(fileName);
+            }
+        });
+
+        
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) {
+                const fileName = document.createElement('div');
+                fileName.textContent = `Selected: ${fileInput.files[0].name}`;
+                fileName.className = 'text-sm text-blue-600 mt-2';
+                dropzone.appendChild(fileName);
+            }
+        });
+
+        
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) {
+                e.preventDefault();
+                alert('Please select a file to upload');
+                return false;
+            }
+
+            const submitButton = this.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.innerHTML = `
+                    <span class="flex items-center justify-center">
+                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Uploading...
+                    </span>
+                `;
+            }
+            return true;
+        });
+    </script>
+</body>
+</html>
+{% endblock %}

@@ -20,4 +20,3 @@ This project is a secure personal cloud storage system developed as part of a Ma
 - **Container**: Docker
 - **Dependencies**: Listed in `requirements.txt`
 
-## Project Structure
